@@ -6,3 +6,4 @@ Pillow
 flask
 fastapi
 uvicorn
+darknet-python-wrapper
