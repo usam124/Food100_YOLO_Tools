@@ -23,16 +23,15 @@ WORKDIR /app
 COPY . .
 
 # Clone darknet repo
-RUN git clone https://github.com/AlexeyAB/darknet.git
-
-WORKDIR /app/darknet
-
-# Enable Python in Makefile
-RUN sed -i 's/GPU=0/GPU=0/' Makefile && \
+# Clone darknet and build
+RUN git clone https://github.com/AlexeyAB/darknet.git && \
+    cd darknet && \
+    sed -i 's/GPU=0/GPU=0/' Makefile && \
     sed -i 's/CUDNN=0/CUDNN=0/' Makefile && \
-    sed -i 's/CUDNN_HALF=0/CUDNN_HALF=0/' Makefile && \
     sed -i 's/OPENCV=0/OPENCV=1/' Makefile && \
-    sed -i 's/LIBSO=0/LIBSO=1/' Makefile
+    sed -i 's/LIBSO=0/LIBSO=1/' Makefile && \
+    make -j$(nproc) && \
+    cp libdarknet.so /app/
 
 # Build darknet shared library with Python bindings
 RUN make -j$(nproc)
@@ -48,6 +47,8 @@ RUN pip3 install --no-cache-dir -r requirements.txt
 # Download yolov2 weights
 RUN mkdir -p cfg && \
     curl -L https://pjreddie.com/media/files/yolov2.weights -o cfg/yolov2.weights
+
+ENV PYTHONPATH="/app:$PYTHONPATH"
 
 EXPOSE 8000
 
