@@ -27,6 +27,10 @@ COPY requirements.txt .
 # Install python dependencies
 RUN pip install --no-cache-dir -r requirements.txt
 
+# Download yolov2 weights to cfg/
+RUN mkdir -p cfg && \
+    curl -L https://pjreddie.com/media/files/yolov2.weights -o cfg/yolov2.weights
+
 # Set environment variables for darknet python wrapper
 ENV DARKNET_PATH=/darknet
 
