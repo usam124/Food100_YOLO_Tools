@@ -33,9 +33,6 @@ RUN git clone https://github.com/AlexeyAB/darknet.git && \
     make -j$(nproc) && \
     cp libdarknet.so /app/
 
-# Build darknet shared library with Python bindings
-RUN make -j$(nproc)
-
 # Add darknet to python path
 ENV PYTHONPATH=/app/darknet/python:$PYTHONPATH
 
