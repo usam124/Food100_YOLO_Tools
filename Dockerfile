@@ -2,7 +2,7 @@ FROM ubuntu:20.04
 
 ENV DEBIAN_FRONTEND=noninteractive
 
-# Install dependencies with retry mechanism
+# Install dependencies
 RUN apt-get update --fix-missing && \
     apt-get upgrade -y && \
     apt-get install -y --no-install-recommends \
@@ -35,7 +35,8 @@ RUN sed -i 's/GPU=0/GPU=0/' Makefile && \
     make -j$(nproc) && \
     cp libdarknet.so /app/ && \
     cp darknet.py /app/ && \
-    cp -r cfg /app/
+    cp -r cfg /app/ && \
+    cp -r data /app/
 
 # Add darknet to Python path and ensure libdarknet.so is found
 ENV PYTHONPATH=/app:$PYTHONPATH
@@ -52,6 +53,9 @@ COPY . .
 
 # Download YOLOv4 weights
 RUN curl -L https://github.com/AlexeyAB/darknet/releases/download/darknet_yolo_v3_optimal/yolov4.weights -o yolov4.weights
+
+# Ensure permissions for libdarknet.so
+RUN chmod +x /app/libdarknet.so
 
 EXPOSE 8000
 
