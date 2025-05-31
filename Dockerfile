@@ -2,9 +2,10 @@ FROM ubuntu:20.04
 
 ENV DEBIAN_FRONTEND=noninteractive
 
-# Install dependencies
-RUN apt-get update && apt-get upgrade -y && \
-    apt-get install -y \
+# Install dependencies with retry mechanism
+RUN apt-get update --fix-missing && \
+    apt-get upgrade -y && \
+    apt-get install -y --no-install-recommends \
         build-essential \
         cmake \
         git \
@@ -54,4 +55,3 @@ RUN curl -L https://github.com/AlexeyAB/darknet/releases/download/darknet_yolo_v
 EXPOSE 8000
 
 CMD ["uvicorn", "app:app", "--host", "0.0.0.0", "--port", "8000"]
-
