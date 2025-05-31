@@ -3,4 +3,3 @@ uvicorn
 opencv-python-headless
 numpy
 pydantic
-darknet-python-wrapper  # or whatever your darknet Python wrapper package is called
