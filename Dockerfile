@@ -21,24 +21,31 @@ RUN apt-get update && apt-get upgrade -y && \
 
 WORKDIR /app
 
-# Clone darknet and build with shared lib + OpenCV + Python bindings
-RUN git clone https://github.com/AlexeyAB/darknet.git && \
-    cd darknet && \
-    sed -i 's/GPU=0/GPU=0/' Makefile && \
+# Clone darknet repo
+RUN git clone https://github.com/AlexeyAB/darknet.git
+
+WORKDIR /app/darknet
+
+# Enable OpenCV and build shared library for Python bindings
+RUN sed -i 's/GPU=0/GPU=0/' Makefile && \
     sed -i 's/CUDNN=0/CUDNN=0/' Makefile && \
     sed -i 's/OPENCV=0/OPENCV=1/' Makefile && \
     sed -i 's/LIBSO=0/LIBSO=1/' Makefile && \
     make -j$(nproc)
 
+RUN cp libdarknet.so /app/
+
 # Add darknet to Python path
 ENV PYTHONPATH=/app/darknet:$PYTHONPATH
 
-# Copy your app code
-COPY . .
+WORKDIR /app
 
 # Install Python dependencies
+COPY requirements.txt .
 RUN pip3 install --no-cache-dir -r requirements.txt
 
+# Copy your app code
+COPY . .
 # Download yolov4 weights
 RUN mkdir -p cfg && \
     curl -L https://pjreddie.com/media/files/yolov4.weights -o yolov4.weights
