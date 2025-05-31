@@ -33,12 +33,13 @@ RUN sed -i 's/GPU=0/GPU=0/' Makefile && \
     sed -i 's/OPENCV=0/OPENCV=1/' Makefile && \
     sed -i 's/LIBSO=0/LIBSO=1/' Makefile && \
     make -j$(nproc) && \
-    cp libdarknet.so /usr/lib/ && \
+    cp libdarknet.so /app/ && \
     cp darknet.py /app/ && \
     cp -r cfg /app/
 
-# Add darknet to Python path
+# Add darknet to Python path and ensure libdarknet.so is found
 ENV PYTHONPATH=/app:$PYTHONPATH
+ENV LD_LIBRARY_PATH=/app:$LD_LIBRARY_PATH
 
 WORKDIR /app
 
